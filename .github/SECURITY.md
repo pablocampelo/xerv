@@ -6,4 +6,4 @@ Use GitHub private vulnerability reporting when available. Otherwise contact the
 
 Include reproduction steps, affected surface and potential impact. Never include credentials, tokens, customer data or production secrets.
 
-Security fixes target the current `main` branch and the supported stack documented in the [README](../README.md#scope).
+Security fixes target the current `main` branch and the supported stack documented in the [README](../docs/ARCHITECTURE.md).

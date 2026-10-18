@@ -1,10 +1,6 @@
 import { ImageResponse } from "next/og";
 
-/**
- * Shared social card for Xerv website links.
- * GitHub repository links have their own Social Preview setting and cannot
- * inherit the website's OG tags. Upload a copy of /opengraph-image there.
- */
+/** Shared social image. Repository preview setup: docs/SOCIAL-PREVIEW.md. */
 export const alt = "Xerv — Build the product. Not the infrastructure. Open-source SaaS foundation.";
 export const size = { width: 1280, height: 640 };
 export const contentType = "image/png";

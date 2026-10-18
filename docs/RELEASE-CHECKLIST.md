@@ -1,31 +1,33 @@
-# Xerv release checklist
+# Release checklist
 
-Xerv is an MIT-licensed source repository, not a managed SaaS. Each deployment must be configured independently.
+Run these checks against the deployed commit. Configuration instructions live in [Setup](SETUP.md); this checklist records what to verify.
 
-## Repository and distribution
+## Repository and deployment
 
-- [ ] The README, package metadata, brand config, GitHub About/description and repository topics consistently say Xerv.
-- [ ] The generated Open Graph card at /opengraph-image renders the current brand and responds with image/png.
-- [ ] Check every public link and verify the live demo is accessible without team SSO or a Vercel login.
-- [ ] Check CI for the exact release commit: frozen install, lint, typecheck, unit tests, build, SQL/RLS database tests, and browser E2E.
-- [ ] Confirm no API secrets, personal tokens or real customer records are committed.
+- [ ] CI passes for the release commit; no credentials or customer records are committed.
+- [ ] Brand, support contact and legal templates are customized for the product.
+- [ ] The public domain serves the intended deployment without a team login; previews remain protected.
+- [ ] Public links, mobile layouts, keyboard navigation, sitemap and social image work; private pages are noindex.
+- [ ] Test and production providers are isolated, migrations are applied, and Auth and billing return to the canonical app origin.
 
-## Hosted provider setup
+## Authentication and private data
 
-- [ ] Configure distinct Supabase, Stripe, Google OAuth, SMTP/Resend and Vercel resources for test and production.
-- [ ] Set NEXT_PUBLIC_SITE_URL to the exact public canonical origin (HTTPS, no trailing slash/path).
-- [ ] In Supabase Authentication → URL Configuration, use that same Site URL and allow /auth/callback and /auth/confirm on that origin.
-- [ ] In Supabase Authentication → Email Templates, install both committed HTML templates from supabase/templates/. Local files do not update hosted Supabase automatically.
-- [ ] Configure Google's authorized OAuth callback as https://<project-ref>.supabase.co/auth/v1/callback (the Supabase endpoint).
-- [ ] Keep Vercel previews protected while making the intended production domain publicly reachable.
-- [ ] Apply database migrations deliberately and configure a signed, environment-specific Stripe webhook.
+- [ ] Hosted email templates and SMTP are configured; test with fresh links.
+- [ ] Signup → confirmation email → authenticated app; resend and expired/invalid links behave correctly.
+- [ ] Recovery email → password change → login with the new password.
+- [ ] Google sign-in, logout and return paths work.
+- [ ] Anonymous access and cross-user access are denied; Pro gates creation/editing while owners retain read/delete after downgrade.
 
-## Smoke-test using fresh email links
+For callback or email-link failures, check [Auth URL configuration](SETUP.md#auth-url-configuration).
 
-- [ ] New email/password signup → delivered verification email → /auth/confirm → authenticated /app (no 404).
-- [ ] Forgot password → delivered recovery email → /auth/confirm → /reset-password → sign in with new password.
-- [ ] Google OAuth works from sign-in to /auth/callback and preserves the session.
-- [ ] Stripe test-mode Checkout, paid invoice webhook, Pro entitlement and Customer Portal work end-to-end.
-- [ ] Production support contact, legal templates, sitemap, mobile layouts and Open Graph card have been reviewed.
+## Billing
 
-If an email link returns 404, inspect its actual hostname and path: compare Vercel production domain, Supabase Site URL, allowed redirects and the installed hosted email template. Changing application code alone does not fix hosted Auth configuration. See [Setup](SETUP.md#auth-url-configuration).
+Use Stripe test mode to exercise these scenarios before going live. Confirm the live deployment uses its own matching keys, Prices and webhook secret.
+
+- [ ] Monthly and annual Checkout, positive paid invoice → Pro, and Customer Portal work.
+- [ ] Access updates even if the browser closes before the webhook; a return URL alone never grants Pro.
+- [ ] Failed renewals do not extend access; cancellation retains only the confirmed paid period.
+- [ ] Duplicate, reordered and concurrent webhook deliveries do not duplicate access or overwrite newer state.
+- [ ] Reconciliation dry-run reports expected drift; reviewed apply repairs it in the test environment.
+
+For failures and financial policy, use the [Billing runbook](BILLING.md).

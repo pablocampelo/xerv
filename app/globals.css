@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: dark;
-  /* Linear-inspired semantic palette. No brand assets or proprietary fonts. */
+  /* Shared semantic color tokens. */
   --background: #08090a;
   --foreground: #f5f5f5;
   --card: #0f1011;
