@@ -1,18 +1,11 @@
-# Social preview
+# Social previews
 
-Xerv uses **one canonical social design** at `/opengraph-image` (1280 × 640 PNG).
+## Website
 
-The landing page metadata advertises this absolute image URL through both `og:image` and `twitter:image` with `summary_large_image`. Next.js derives the absolute URL from `NEXT_PUBLIC_SITE_URL`; ensure that environment variable points to the production domain.
+[app/opengraph-image.tsx](../app/opengraph-image.tsx) generates the 1280 × 640 PNG used by the website and README. [app/layout.tsx](../app/layout.tsx) declares the Open Graph and Twitter image metadata. Set `NEXT_PUBLIC_SITE_URL` to your public origin.
 
-## GitHub repository preview — separate setting
+## GitHub repository
 
-A link to `https://github.com/pablocampelo/xerv` gets its tags from GitHub, **not** from `supasaas-kit.vercel.app`. To use this same visual:
+Keep **Settings → Social preview** without a custom image to use GitHub's automatic repository card, including its statistics. If a custom image is set, remove it from that setting.
 
-1. After production deploy, open `https://xerv.vercel.app/opengraph-image` in a browser and save the PNG.
-2. Open `https://github.com/pablocampelo/xerv/settings`.
-3. Under **Social preview**, choose **Edit → Upload an image** and select the downloaded PNG (GitHub accepts PNG/JPEG/GIF < 1 MB).
-4. Recheck GitHub's own repository preview after the upload.
-
-If a preview card on X or another platform still shows the previous image, the platform may be serving a cached card. Cards are not guaranteed to appear every time; this is determined by the receiving platform, not by the linked site.
-
-Do not replace the social image with a screenshot containing GitHub repository statistics or simulated UI: the site and repository should use the same canonical visual.
+The website image and repository card are independent. Changing the README image does not change the repository's social preview. Confirm the card in the destination platform before sharing; its preview may differ from GitHub's current metadata.

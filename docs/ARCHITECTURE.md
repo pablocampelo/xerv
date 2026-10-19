@@ -1,6 +1,6 @@
 # Architecture
 
-Xerv is one Next.js App Router application backed by Supabase Auth/Postgres and Stripe. It is designed for **one user owning private product data**, with one optional Pro entitlement. The [README scope](../README.md#scope) defines the supported product boundary; this page describes the implementation and its trust boundaries.
+Xerv is one Next.js App Router application backed by Supabase Auth/Postgres and Stripe. It is designed for **one user owning private product data**, with one optional Pro entitlement. The supported model is individual accounts, Free + Pro, monthly or annual billing, and deployment to Vercel.
 
 ## Request and financial flows
 
@@ -32,7 +32,7 @@ Browser ──► Next.js UI / Server Actions ──► Supabase Auth
 | `lib/example/`, `components/app/example.tsx`, `app/app/example/` | Removable Example Resource domain |
 | `lib/billing/`, `config/catalog.ts` | Server-selected offers, Stripe client, verified paid-through policy, webhook processing and projection |
 | `scripts/reconcile-billing.mjs` | Operator-only reconciliation using the same financial policy as webhooks |
-| `config/product.ts`, `config/site.ts` | Buyer-editable product identity versus environment-derived site URL/support contact |
+| `config/product.ts`, `config/site.ts` | Product identity versus environment-derived site URL/support contact |
 | `components/app/`, `components/marketing/`, `components/shared/` | Private app shell, public pages and a small UI primitive/pattern set |
 | `tests/`, `.github/workflows/ci.yml` | Focused unit, HTTP-boundary and browser regression checks, plus CI |
 
@@ -61,15 +61,13 @@ The SQL migration series is the only schema authority. `pnpm supabase:types` reg
 
 ## Stripe and access boundary
 
-The application offers Free, Pro Monthly and Pro Annual, with one logical `pro` entitlement. Prices and recurrence come from validated Stripe Prices; an archived Price may still correspond to an existing legitimate subscription.
+Checkout selects Prices on the server. Signed webhooks validate Stripe facts and write a privileged billing projection; `has_pro()` checks its confirmed paid period. The browser cannot grant access or write that projection.
 
-The server creates idempotent, user-bound Checkout attempts. Stripe sends signed webhooks to `app/api/stripe/webhook/route.ts`. Processing verifies signatures and environment, deduplicates receipts, handles competing/late events and commits the verified subscription and paid invoice facts to the local paid-through projection. A successful Checkout browser redirect **never** advances access.
-
-`billing:reconcile` reads Stripe facts and reports drift without modifying state by default. Operators must opt into `--apply`. There is **no default worker, scheduler or automatic recovery SLA**. Use the [Billing](BILLING.md) when retries fail.
+See [Billing](BILLING.md) for payment, cancellation and recovery behavior.
 
 ## Replacing the Example Resource
 
-This is the primary customization path; it was tested in a disposable adaptation exercise replacing Example with Projects while leaving Auth and Billing intact.
+Replace the sample domain while keeping Auth and Billing independent:
 
 1. Define your product table through a **new versioned SQL migration**. Derive immutable owner identity with `auth.uid()`; enforce RLS for your actual data model.
 2. If creation/editing are Pro-only, use the existing current-user entitlement boundary. Retained own data must stay readable/deletable after downgrade.
@@ -79,10 +77,10 @@ This is the primary customization path; it was tested in a disposable adaptation
 
 **Do not rewrite `lib/auth/`, `lib/billing/` or financial projection logic** to add product-domain behavior. If you need a different business model, you are leaving the supported starter contract.
 
-## Deployability, security and verification
+## Analytics
 
-Vercel is the supported deployment target. Each buyer deploys to **their own** Supabase, Google OAuth, SMTP/Resend and Stripe resources. Secrets remain server-only, public pages have SEO metadata, private pages are noindex and critical flows use safe response/error handling. Legal pages are *templates* until customized and reviewed.
+Vercel Web Analytics loads from the root layout in production builds. It is disabled during local development and browser tests.
 
-The CI workflow validates frozen installation, lint, typecheck, unit tests, production build, clean Supabase migrations, RLS/pgTAP, generated-type stability and Playwright browser journeys. **CI cannot certify your own hosted credentials, redirects or webhook destination**; complete the hosted steps in [Setup](SETUP.md).
+## Verification
 
-Xerv is distributed as a Git release, not a hosted shared SaaS.
+See [Contributing](../.github/CONTRIBUTING.md) for local checks and [the CI workflow](../.github/workflows/ci.yml) for automation. Hosted configuration is covered in [Setup](SETUP.md); verify the deployed app with the [release checklist](RELEASE-CHECKLIST.md).

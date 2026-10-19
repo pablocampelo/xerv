@@ -5,17 +5,12 @@ import { Button } from "@/components/ui/button";
 import type { PricingViewModel } from "@/lib/ui/models";
 
 const faqs = [
-  ["What is Xerv?", "Xerv is a free, MIT-licensed Next.js foundation for individual-account subscription products. The Example Resource is deliberately small and replaceable."],
-  ["Is Xerv free and open source?", "Yes. Clone, fork and adapt it under the MIT license. Configure your own Supabase, Stripe, Resend SMTP and Vercel resources."],
-  ["What does the starter cover?", "The supported product surface is intentionally closed: public marketing, Google and email/password Auth, private user-owned data, one Free plan, one Pro entitlement, Billing, Account, Help, and the replaceable Example Resource."],
-  ["Which authentication methods are supported?", "Google OAuth and email/password with verification, resend, and recovery. Magic-link authentication is intentionally not part of the product."],
-  ["Why Supabase?", "Supabase is the supported identity and Postgres platform. The private-data contract uses user ownership and Postgres row-level security rather than client-side entitlement checks."],
-  ["How is Stripe handled?", "The commercial model is Free plus one Pro plan, billed monthly or annually, using Checkout and Customer Portal. The billing contract derives Pro access from trusted financial facts and confirmed paid-through semantics."],
-  ["Does access depend on the Checkout success page?", "No. The supported billing contract never treats a browser return as authority for Pro access."],
-  ["Can I replace the Example Resource with my product?", "Yes. It is the replaceable boundary for exercising Auth, ownership, RLS, Pro gating, and CRUD together. Replacing it must not require rebuilding Auth, Billing, Account, configuration, or the app shell."],
-  ["Does it support teams or organizations?", "No. Xerv deliberately supports individual customer accounts only."],
-  ["Is it friendly to coding agents?", "Yes. The structure favors few canonical documents, explicit boundaries, generated types, executable tests, and centralized configuration rather than agent-specific frameworks."],
-  ["Where does it deploy?", "Vercel is the only supported deployment target, with Supabase and Stripe isolated across local, staging, and production environments."],
+  ["Is Xerv free and open source?", "Yes. Use, fork and adapt Xerv under the MIT license. Hosting, payments and email use your own provider accounts."],
+  ["What's included?", "Authentication, private user data, Free and Pro subscriptions, account settings, billing and a responsive interface. The example app shows how they work together."],
+  ["Which sign-in methods are supported?", "Google and email/password, with email verification and password recovery."],
+  ["How do subscriptions work?", "Stripe Checkout and Customer Portal support monthly and annual Pro plans. Access updates after the server confirms payment."],
+  ["Can I build my own product on it?", "Yes. Change the brand and replace the example with your product. Xerv is designed for individual accounts with one Pro plan; team accounts are not included."],
+  ["How do I get started?", "Clone the repository and follow the setup guide. Run locally with Docker, then configure your providers and deploy to Vercel."],
 ] as const;
 
 export function Landing({ pricing }: { pricing: PricingViewModel }) {

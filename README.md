@@ -2,102 +2,37 @@
 
 **Build the product. Not the infrastructure.**
 
-An MIT-licensed SaaS foundation built with **Next.js, Supabase, Stripe, Resend (SMTP) and Vercel**. Auth, private data, subscriptions and deployment are connected; replace the example product domain with yours.
+An open-source SaaS foundation with authentication, private data and subscriptions already connected. Built with **Next.js, Supabase and Stripe**, with Resend SMTP and Vercel deployment.
 
-**Free to use · Clone it · Fork it · Build your product.**
-
-[Live demo](https://xerv.vercel.app) · [Setup](docs/SETUP.md) · [Architecture](docs/ARCHITECTURE.md) · [Billing](docs/BILLING.md) · [Release checklist](docs/RELEASE-CHECKLIST.md)
+[Live demo](https://xerv.vercel.app) · [Get started](docs/SETUP.md) · [MIT license](LICENSE)
 
 [![CI](https://github.com/pablocampelo/xerv/actions/workflows/ci.yml/badge.svg)](https://github.com/pablocampelo/xerv/actions/workflows/ci.yml)
 
-[![Xerv social card](https://xerv.vercel.app/opengraph-image)](https://xerv.vercel.app)
-
-Xerv gives technical founders and small teams a focused subscription foundation instead of another oversized boilerplate. Authentication, private user data, paid access, billing recovery and the deployment path are connected and tested.
-
-Built for **individual user accounts**, **Free + Pro**, and **monthly or annual billing**. The repository deliberately stays narrow: no teams, seats, usage billing, CMS, analytics framework or speculative provider abstraction.
-
-## Why Xerv
-
-- **Security boundaries are explicit.** Supabase Auth, Postgres ownership and RLS are exercised together instead of relying on client-side checks.
-- **Billing is server-authoritative.** Stripe Checkout and Customer Portal are backed by signed webhooks, idempotent event handling and paid-through entitlement state. A browser return never grants Pro.
-- **The sample domain is replaceable.** The Example Resource proves Auth → ownership → RLS → Pro → CRUD end to end without becoming architecture you have to keep.
-- **The supported path is tested.** CI covers frozen install, lint, typecheck, unit tests, production build, Supabase migrations, database security tests, generated types and Playwright E2E.
+[![Xerv — Build the product. Not the infrastructure.](https://xerv.vercel.app/opengraph-image)](https://xerv.vercel.app)
 
 ## What's included
 
-| Foundation | What ships |
-| --- | --- |
-| **Next.js** | App Router, strict TypeScript, responsive marketing/auth/app surfaces and Vercel deployment |
-| **Supabase** | Google + email/password Auth, Postgres, migrations, generated types, ownership constraints and RLS |
-| **Stripe** | Free + Pro, monthly/annual Checkout, Customer Portal, signed webhooks and paid-through access |
-| **Product flows** | Signup, verification, login, recovery, Dashboard, Account, Billing, Help and legal templates |
-| **Reliability** | Idempotent billing processing, concurrency protection, diagnostics and dry-run reconciliation |
-| **Confidence** | GitHub Actions, unit tests, database tests and browser E2E |
+- **Authentication** — email/password, Google sign-in, verification and recovery.
+- **Subscriptions** — Free and Pro, monthly or annual billing, Checkout and Customer Portal.
+- **Your app** — responsive landing page, dashboard, account settings and a replaceable example with private user data.
+- **Tests** — unit, database security and browser tests, run in CI.
 
-## Run it locally
+Designed for individual accounts and a single Pro plan. Use the foundation, replace the example and build your product.
 
-**Prerequisites:** Node.js 24, pnpm 11.19.0 and Docker.
+## Get started
+
+Requires **Node.js 24**, **pnpm 11.19.0** and **Docker**.
 
 ```sh
 git clone https://github.com/pablocampelo/xerv.git my-saas
 cd my-saas
 pnpm install --frozen-lockfile
-pnpm supabase:start
-pnpm supabase:status
 ```
 
-Copy `.env.example` to `.env.local`. Use the local Supabase URL and publishable key printed by `pnpm supabase:status`, keep `NEXT_PUBLIC_SITE_URL=http://localhost:3000`, and provide a support email. For local billing writes, use the **local service-role key** as `SUPABASE_SECRET_KEY`. Never expose it through a `NEXT_PUBLIC_*` variable.
-
-```sh
-pnpm supabase:db:reset
-pnpm dev
-```
-
-Open **http://localhost:3000**. Local signup and password recovery use Mailpit at **http://127.0.0.1:54324**, so you can exercise email flows without a real inbox.
-
-To exercise real Checkout and Pro, add Stripe **test-mode** credentials and the supported monthly/annual Price IDs, then run a local Stripe webhook listener. See [Setup](docs/SETUP.md) for the complete provider and deployment path.
+Follow the [local setup guide](docs/SETUP.md#1-local-development) to configure the environment and start the app. For deployment, connect your own provider accounts and follow the [release checklist](docs/RELEASE-CHECKLIST.md).
 
 ## Make it yours
 
-1. **Brand it.** Edit `config/product.ts` (including `repositoryUrl`), replace the sample marketing/legal copy and point the canonical site URL at your deployment.
-2. **Own the providers.** Create your Supabase project, Google OAuth credentials, SMTP sender and Stripe products/Prices.
-3. **Replace Example.** Build your real domain in place of `lib/example/` and the Example routes. Add migrations and regenerate database types while preserving Auth, Billing and RLS trust boundaries.
-4. **Deploy.** Apply hosted migrations deliberately, deploy to Vercel, configure the signed Stripe webhook and verify Auth, recovery and paid access on the hosted environment.
+Set your brand in [`config/product.ts`](config/product.ts), replace the sample pages and build your domain in place of Example.
 
-## Verify changes
-
-```sh
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm supabase:db:reset
-pnpm supabase:test:db
-pnpm supabase:types
-pnpm exec playwright install chromium
-pnpm test:e2e
-```
-
-The database reset is **destructive to your local Supabase database**. Never point it at hosted data. CI validates the repository; hosted credentials, redirects, SMTP and webhook destinations still need environment-level verification.
-
-## Scope
-
-The starter intentionally supports **one user-owned data model, one Pro entitlement, two billing intervals and Vercel as the deployment target**. It does not include teams/seats, extra OAuth providers, usage billing, queues, CMS, analytics, a generic API, automatic billing-repair cron or an admin panel.
-
-This constraint is intentional: the infrastructure stays understandable while the replaceable product domain stays yours.
-
-## Documentation
-
-- [Setup](docs/SETUP.md) — local development, hosted Supabase/Auth/SMTP, Stripe and Vercel
-- [Architecture](docs/ARCHITECTURE.md) — boundaries, code map and replacing Example
-- [Billing](docs/BILLING.md) — Stripe operations, recovery and safe reconciliation
-
-## Before publishing a live demo
-
-Your clone uses **its own** Supabase, Stripe, Google OAuth, Resend SMTP and Vercel configuration. Supabase **Site URL**, allowed redirects, and hosted confirmation/recovery email templates must point to the exact canonical app origin. Committing the local templates does **not** install them in a hosted Supabase project. See the [release checklist](docs/RELEASE-CHECKLIST.md) before sharing a live link.
-
-[Star Xerv on GitHub](https://github.com/pablocampelo/xerv) if it helps you, or fork it to build on top of the code.
-
-## License
-
-[MIT](LICENSE)
+[Architecture](docs/ARCHITECTURE.md) · [Billing](docs/BILLING.md) · [Contributing](.github/CONTRIBUTING.md)

@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Brand } from "@/components/shared/brand";
+import { GitHubMark } from "@/components/shared/github-mark";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { productConfig } from "@/config/product";
@@ -49,8 +50,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
           <nav aria-label="Main navigation" className="hidden items-center lg:flex">
             <div className="flex items-center gap-5 xl:gap-7">
               {productConfig.navigation.public.map((item) => (
-                <Link className="nav-link" key={item.href} href={item.href}>
-                  {item.label}
+                <Link className="nav-link inline-flex min-h-10 min-w-10 items-center justify-center" key={item.href} href={item.href} aria-label={item.label}>
+                  {item.href === productConfig.repositoryUrl ? <GitHubMark /> : item.label}
                 </Link>
               ))}
             </div>
@@ -82,9 +83,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
               className="rounded-md p-3 text-sm transition-colors hover:bg-muted"
               key={item.href}
               href={item.href}
+              aria-label={item.label}
               onClick={() => setOpen(false)}
             >
-              {item.label}
+              {item.href === productConfig.repositoryUrl ? <GitHubMark /> : item.label}
             </Link>
           ))}
         </nav>
